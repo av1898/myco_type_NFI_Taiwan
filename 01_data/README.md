@@ -1,4 +1,4 @@
-processed plot-level data obtained from raw data
+data_NFI_Taiwan.csv: processed plot-level data obtained from raw data
 
 name of variables, definition and units in brackets
 
@@ -17,3 +17,6 @@ name of variables, definition and units in brackets
 -   EM: proportion of EM-associated species in the plot
 -   cmi_mean: climatological mean climate moisture index of each plot (Kg m-2 mt-1)
 -   bio11_tmin: climatological mean minimum temperature of each plot (ºC)
+
+richness_model.RDS: model of tree species richness on EM dominance, stand development, and minimum temperature 
+simpson_model.RDS: model of tree species eveness on EM dominance, stand development, and minimum temperature 
