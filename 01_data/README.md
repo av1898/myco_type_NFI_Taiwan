@@ -15,4 +15,5 @@ name of variables, definition and units in brackets
 -   total_simpson: species evenness in the plot
 -   AM: proportion of AM-associated species in the plot
 -   EM: proportion of EM-associated species in the plot
--   cmi_mean: climate moisture index (Kg m-2 mt-1)
+-   cmi_mean: climatological mean climate moisture index of each plot (Kg m-2 mt-1)
+-   bio11_tmin: climatological mean minimum temperature of each plot (ºC)
