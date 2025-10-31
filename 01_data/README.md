@@ -1,0 +1,18 @@
+processed plot-level data obtained from raw data
+
+name of variables, definition and units in brackets
+
+-   plot_id: unique identifier for each plot
+-   basal_area: sum of basal area of all trees in the plot (m2 ha-1)
+-   density: number of trees per unit area (trees ha-1)
+-   mean_dbh: mean diameter at breast height (dbh) of all trees in the plot (cm)
+-   max_dbh: maximum dbh in the plot (cm)
+-   cv_dbh: coefficient of variation of dbh in the plot
+-   plot_area: area of each plot (ha)
+-   elevation: elevation of each plot (m a.s.l.)
+-   mean_dbh_large: mean dbh of the largest 100 trees ha-1 in the plot (cm)
+-   total_richness: number of species in the plot (no species)
+-   total_simpson: species evenness in the plot
+-   AM: proportion of AM-associated species in the plot
+-   EM: proportion of EM-associated species in the plot
+-   cmi_mean: climate moisture index (Kg m-2 mt-1)
