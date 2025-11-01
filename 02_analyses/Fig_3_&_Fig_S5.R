@@ -268,13 +268,13 @@ predictions_effects <- predictions_all |>
   mutate(
     effect_EM_AM_late = pred_EM_3_late - pred_EM_1_late,
     effect_EM_MIX_late = pred_EM_3_late - pred_EM_2_late,
-    effect_AM_MIX_late = pred_EM_2_late - pred_EM_1_late,
+    effect_MIX_AM_late = pred_EM_2_late - pred_EM_1_late,
     effect_EM_AM_median = pred_EM_3_median - pred_EM_1_median,
     effect_EM_MIX_median = pred_EM_3_median - pred_EM_2_median,
-    effect_AM_MIX_median = pred_EM_2_median - pred_EM_1_median,
+    effect_MIX_AM_median = pred_EM_2_median - pred_EM_1_median,
     effect_EM_AM_early = pred_EM_3_early - pred_EM_1_early,
     effect_EM_MIX_early = pred_EM_3_early - pred_EM_2_early,
-    effect_AM_MIX_early = pred_EM_2_early - pred_EM_1_early
+    effect_MIX_AM_early = pred_EM_2_early - pred_EM_1_early
   )
 
 pred_effects_l <- predictions_effects |>
@@ -282,13 +282,13 @@ pred_effects_l <- predictions_effects |>
     cols = c(
       effect_EM_AM_late,
       effect_EM_MIX_late,
-      effect_AM_MIX_late,
+      effect_MIX_AM_late,
       effect_EM_AM_median,
       effect_EM_MIX_median,
-      effect_AM_MIX_median,
+      effect_MIX_AM_median,
       effect_EM_AM_early,
       effect_EM_MIX_early,
-      effect_AM_MIX_early
+      effect_MIX_AM_early
     ),
     names_to = "name",
     values_to = "value"
@@ -305,11 +305,11 @@ eval_pred <- ggplot(predictions_filtered_test, aes(
 
 ## plot the effect of EM in young, mid and mature on sp richness
 pred_effects_ll <- pred_effects_l |>
-  mutate(std = case_when(name == "effect_AM_MIX_early" | name == "effect_EM_AM_early" | 
+  mutate(std = case_when(name == "effect_MIX_AM_early" | name == "effect_EM_AM_early" | 
                            name == "effect_EM_MIX_early" ~ "Early", 
-                         name == "effect_AM_MIX_median" | name == "effect_EM_AM_median" | 
+                         name == "effect_MIX_AM_median" | name == "effect_EM_AM_median" | 
                            name == "effect_EM_MIX_median" ~ "Median", 
-                         name == "effect_AM_MIX_late" | name == "effect_EM_AM_late" | 
+                         name == "effect_MIX_AM_late" | name == "effect_EM_AM_late" | 
                            name == "effect_EM_MIX_late" ~ "Late"))
 
 pred_effects_ll$std <- factor(pred_effects_ll$std, levels=c("Early", "Median", "Late"))
@@ -324,8 +324,8 @@ pred_comparison_cold <- ggplot(pred_effects_ll, aes
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
   ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
-  scale_x_discrete(labels = c(expression("Mixed vs. AM"), expression("EM vs. AM"),
-                              expression("EM vs. Mixed"))) +
+  scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
+                              expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
   scale_fill_viridis(discrete = TRUE, option = "D") +
   facet_grid(vars(std), scales = "free") +
@@ -620,13 +620,13 @@ predictions_effects <- predictions_all |>
   mutate(
     effect_EM_AM_late = pred_EM_3_late - pred_EM_1_late,
     effect_EM_MIX_late = pred_EM_3_late - pred_EM_2_late,
-    effect_AM_MIX_late = pred_EM_2_late - pred_EM_1_late,
+    effect_MIX_AM_late = pred_EM_2_late - pred_EM_1_late,
     effect_EM_AM_median = pred_EM_3_median - pred_EM_1_median,
     effect_EM_MIX_median = pred_EM_3_median - pred_EM_2_median,
-    effect_AM_MIX_median = pred_EM_2_median - pred_EM_1_median,
+    effect_MIX_AM_median = pred_EM_2_median - pred_EM_1_median,
     effect_EM_AM_early = pred_EM_3_early - pred_EM_1_early,
     effect_EM_MIX_early = pred_EM_3_early - pred_EM_2_early,
-    effect_AM_MIX_early = pred_EM_2_early - pred_EM_1_early
+    effect_MIX_AM_early = pred_EM_2_early - pred_EM_1_early
   )
 
 pred_effects_l <- predictions_effects |>
@@ -634,13 +634,13 @@ pred_effects_l <- predictions_effects |>
     cols = c(
       effect_EM_AM_late,
       effect_EM_MIX_late,
-      effect_AM_MIX_late,
+      effect_MIX_AM_late,
       effect_EM_AM_median,
       effect_EM_MIX_median,
-      effect_AM_MIX_median,
+      effect_MIX_AM_median,
       effect_EM_AM_early,
       effect_EM_MIX_early,
-      effect_AM_MIX_early
+      effect_MIX_AM_early
     ),
     names_to = "name",
     values_to = "value"
@@ -648,11 +648,11 @@ pred_effects_l <- predictions_effects |>
 
 ## plot the effect of EM in young, mid and late in species richness
 pred_effects_ll <- pred_effects_l |>
-  mutate(std = case_when(name == "effect_AM_MIX_early" | name == "effect_EM_AM_early" | 
+  mutate(std = case_when(name == "effect_MIX_AM_early" | name == "effect_EM_AM_early" | 
                            name == "effect_EM_MIX_early" ~ "Early", 
-                         name == "effect_AM_MIX_median" | name == "effect_EM_AM_median" | 
+                         name == "effect_MIX_AM_median" | name == "effect_EM_AM_median" | 
                            name == "effect_EM_MIX_median" ~ "Median", 
-                         name == "effect_AM_MIX_late" | name == "effect_EM_AM_late" | 
+                         name == "effect_MIX_AM_late" | name == "effect_EM_AM_late" | 
                            name == "effect_EM_MIX_late" ~ "Late"))
 
 pred_effects_ll$std <- factor(pred_effects_ll$std, levels=c("Early", "Median", "Late"))
@@ -667,8 +667,8 @@ pred_comparison_median <- ggplot(pred_effects_ll, aes
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
   ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
-  scale_x_discrete(labels = c(expression("Mixed vs. AM"), expression("EM vs. AM"),
-                              expression("EM vs. Mixed"))) +
+  scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
+                              expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
   scale_fill_viridis(discrete = TRUE, option = "D") +
   facet_grid(vars(std), scales = "free") +
@@ -956,19 +956,18 @@ predictions_selected_r <- arg2_dat_pred_v |>
 predictions_all <- predictions_selected_r |>
   reduce(left_join, by = "plot_id")
 
-# get the difference between of EM in young,
-# mid & mature
+# get the difference between of EM in young, mid & mature
 predictions_effects <- predictions_all |> 
   mutate(
     effect_EM_AM_late = pred_EM_3_late - pred_EM_1_late,
     effect_EM_MIX_late = pred_EM_3_late - pred_EM_2_late,
-    effect_AM_MIX_late = pred_EM_2_late - pred_EM_1_late,
+    effect_MIX_AM_late = pred_EM_2_late - pred_EM_1_late,
     effect_EM_AM_median = pred_EM_3_median - pred_EM_1_median,
     effect_EM_MIX_median = pred_EM_3_median - pred_EM_2_median,
-    effect_AM_MIX_median = pred_EM_2_median - pred_EM_1_median,
+    effect_MIX_AM_median = pred_EM_2_median - pred_EM_1_median,
     effect_EM_AM_early = pred_EM_3_early - pred_EM_1_early,
     effect_EM_MIX_early = pred_EM_3_early - pred_EM_2_early,
-    effect_AM_MIX_early = pred_EM_2_early - pred_EM_1_early
+    effect_MIX_AM_early = pred_EM_2_early - pred_EM_1_early
   )
 
 pred_effects_l <- predictions_effects |>
@@ -976,13 +975,13 @@ pred_effects_l <- predictions_effects |>
     cols = c(
       effect_EM_AM_late,
       effect_EM_MIX_late,
-      effect_AM_MIX_late,
+      effect_MIX_AM_late,
       effect_EM_AM_median,
       effect_EM_MIX_median,
-      effect_AM_MIX_median,
+      effect_MIX_AM_median,
       effect_EM_AM_early,
       effect_EM_MIX_early,
-      effect_AM_MIX_early
+      effect_MIX_AM_early
     ),
     names_to = "name",
     values_to = "value"
@@ -990,11 +989,11 @@ pred_effects_l <- predictions_effects |>
 
 ## plot the effect of EM in young, mid and late in species richness
 pred_effects_ll <- pred_effects_l |>
-  mutate(std = case_when(name == "effect_AM_MIX_early" | name == "effect_EM_AM_early" | 
+  mutate(std = case_when(name == "effect_MIX_AM_early" | name == "effect_EM_AM_early" | 
                            name == "effect_EM_MIX_early" ~ "Early", 
-                         name == "effect_AM_MIX_median" | name == "effect_EM_AM_median" | 
+                         name == "effect_MIX_AM_median" | name == "effect_EM_AM_median" | 
                            name == "effect_EM_MIX_median" ~ "Median", 
-                         name == "effect_AM_MIX_late" | name == "effect_EM_AM_late" | 
+                         name == "effect_MIX_AM_late" | name == "effect_EM_AM_late" | 
                            name == "effect_EM_MIX_late" ~ "Late"))
 
 pred_effects_ll$std <- factor(pred_effects_ll$std, levels=c("Early", "Median", "Late"))
@@ -1010,8 +1009,8 @@ pred_comparison_warm <- ggplot(pred_effects_ll, aes
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
   ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
-  scale_x_discrete(labels = c(expression("Mixed vs. AM"), expression("EM vs. AM"),
-                              expression("EM vs. Mixed"))) +
+  scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
+                              expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
   #scale_fill_viridis(discrete = TRUE, option = "D") +
   facet_grid(vars(std), scales = "free") +
