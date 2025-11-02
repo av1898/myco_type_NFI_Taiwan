@@ -18,5 +18,5 @@ name of variables, definition and units in brackets
 -   cmi_mean: climatological mean climate moisture index of each plot (Kg m-2 mt-1)
 -   bio11_tmin: climatological mean minimum temperature of each plot (ºC)
 
-richness_model.RDS: model of tree species richness on EM dominance, stand development, and minimum temperature 
-simpson_model.RDS: model of tree species eveness on EM dominance, stand development, and minimum temperature 
+richness_model.RDS: model of tree species richness on EM dominance, stand development, and mean minimum temperature 
+simpson_model.RDS: model of tree species eveness on EM dominance, stand development, and mean minimum temperature  

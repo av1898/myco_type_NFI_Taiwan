@@ -1,5 +1,5 @@
-## Figure 3
-  
+## Figure S7
+
 ## Libraries
 library(tidyverse)
 library(gratia)
@@ -12,12 +12,12 @@ library(ggdist)
 library(here)
 library(mgcv)
 
-richness_model <- read_rds("01_data/richness_model.RDS")
+simpson_model <- read_rds("01_data/simpson_model.RDS")
 
 data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
 
 ## top panel
-sm <- smooth_estimates(richness_model, dist = 0.1)
+sm <- smooth_estimates(simpson_model, dist = 0.1)
 
 quantile(data_models$bio11_tmin)
 
@@ -50,7 +50,7 @@ pattern <- ggplot(sm_climate_g, aes(x = EM, y = mean_dbh_large, group = climate)
       midpoint = 0,
       low = "#2166AC",
       high = "#B2182B",  
-      name = "Partial effect on\nlog-tree species richness") +
+      name = "Partial effect on\nlog-tree species evenness") +
   scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
   theme(
     plot.title = element_text(color = "black", size = 16),
@@ -170,7 +170,7 @@ newdata_list_c <- list(
 
 # make the predictions for each dataset
 predictions_c <- map(newdata_list_c, \(x) predict(
-  object = richness_model, newdata = x, se.fit = TRUE, type = "response"
+  object = simpson_model, newdata = x, se.fit = TRUE, type = "response"
 ))
 
 arg2_dat_pred_c <- list(dat = newdata_list_c, pred = predictions_c)
@@ -204,7 +204,7 @@ names(newdata_list_predictions_c) <- c(
 # select the variables of interest from each dataset
 predictions_selected_c <- map(
   newdata_list_predictions_c,
-  \(x) dplyr::select(x, plot_id, predictions_c, total_richness))
+  \(x) dplyr::select(x, plot_id, predictions_c, total_simpson))
 
 # add prediction name to each dataset
 mutate_name_c <- function(x, names_df){
@@ -215,7 +215,7 @@ mutate_name_c <- function(x, names_df){
 }
 
 arg2_x_names_df_c <- list(x = 1:length(predictions_selected_c),
-                        names_df = names(predictions_selected_c))
+                          names_df = names(predictions_selected_c))
 
 predictions_selected_c <- arg2_x_names_df_c |>
   pmap_df(mutate_name_c)
@@ -297,10 +297,10 @@ pred_effects_l_c <- predictions_effects_c |>
 ## evaluate predictions on the observed data
 predictions_filtered_test_c <- predictions_selected_c |>
   filter(df == "data_models1") |>
-  dplyr::select(plot_id, total_richness, predictions_c)
+  dplyr::select(plot_id, total_simpson, predictions_c)
 
 eval_pred_c <- ggplot(predictions_filtered_test_c, aes(
-  predictions_c, total_richness)) + geom_point(alpha = 0.3) +
+  predictions_c, total_simpson)) + geom_point(alpha = 0.3) +
   geom_abline(slope = 1, intercept = 0, col = "red")
 
 ## plot the effect of EM in young, mid and mature on sp richness
@@ -315,15 +315,15 @@ pred_effects_ll_c <- pred_effects_l_c |>
 pred_effects_ll_c$std <- factor(pred_effects_ll_c$std, levels=c("Early", "Median", "Late"))
 
 pred_comparison_c <- ggplot(pred_effects_ll_c, aes
-                               (x = name, y = value,
-                                 fill = std, color = std)) +
+                            (x = name, y = value,
+                              fill = std, color = std)) +
   stat_pointinterval(
     point_interval = median_qi,
     position = position_dodge(width = c(0.66, 0.95)),
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in tree species evenness") +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -396,10 +396,10 @@ median_pred_ll_c
 
 line_effect_c <- ggplot(
   median_pred_ll_c, aes(x = EM, y = value, fill = std, 
-                       color = std)) +
+                        color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
-  scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
+  ylab("Tree species evenness") + xlab("EM proportion") + 
+  scale_y_continuous(limits = c(0, 6), breaks = c(0, 1,2, 3, 4, 5, 6)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D") +
   theme(
@@ -519,7 +519,7 @@ newdata_list_m <- list(
 
 # make the predictions for each dataset
 predictions_m <- map(newdata_list_m, \(x) predict(
-  object = richness_model, newdata = x, se.fit = TRUE, type = "response"
+  object = simpson_model, newdata = x, se.fit = TRUE, type = "response"
 ))
 
 arg2_dat_pred_m <- list(dat = newdata_list_m, pred = predictions_m)
@@ -553,7 +553,7 @@ names(newdata_list_predictions_m) <- c(
 # select the variables of interest from each dataset
 predictions_selected_m <- map(
   newdata_list_predictions_m,
-  \(x) dplyr::select(x, plot_id, predictions_m, total_richness))
+  \(x) dplyr::select(x, plot_id, predictions_m, total_simpson))
 
 # add prediction name to each dataset
 mutate_name_m <- function(x, names_df){
@@ -564,7 +564,7 @@ mutate_name_m <- function(x, names_df){
 }
 
 arg2_x_names_df_m <- list(x = 1:length(predictions_selected_m),
-                        names_df = names(predictions_selected_m))
+                          names_df = names(predictions_selected_m))
 
 predictions_selected_m <- arg2_x_names_df_m |>
   pmap_df(mutate_name_m)
@@ -658,15 +658,15 @@ pred_effects_ll_m <- pred_effects_l_m |>
 pred_effects_ll_m$std <- factor(pred_effects_ll_m$std, levels=c("Early", "Median", "Late"))
 
 pred_comparison_m <- ggplot(pred_effects_ll_m, aes
-                                 (x = name, y = value,
-                                   fill = std, color = std)) +
+                            (x = name, y = value,
+                              fill = std, color = std)) +
   stat_pointinterval(
     point_interval = median_qi,
     position = position_dodge(width = c(0.66, 0.95)),
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in tree species evenness") +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -738,10 +738,10 @@ median_pred_ll_m
 
 line_effect_m <- ggplot(
   median_pred_ll_m, aes (x = EM, y = value, fill = std, 
-                       color = std)) +
+                         color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
-  scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
+  ylab("Tree species evenness") + xlab("EM proportion") + 
+  scale_y_continuous(limits = c(0, 6), breaks = c(1, 2, 3, 4, 5, 6)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D") +
   theme(
@@ -861,7 +861,7 @@ newdata_list_w <- list(
 
 # make the predictions for each dataset
 predictions_w <- map(newdata_list_w, \(x) predict(
-  object = richness_model, newdata = x, se.fit = TRUE, type = "response"
+  object = simpson_model, newdata = x, se.fit = TRUE, type = "response"
 ))
 
 arg2_dat_pred_w <- list(dat = newdata_list_w, pred = predictions_w)
@@ -895,7 +895,7 @@ names(newdata_list_predictions_w) <- c(
 # select the variables of interest from each dataset
 predictions_selected_w <- map(
   newdata_list_predictions_w,
-  \(x) dplyr::select(x, plot_id, predictions_w, total_richness))
+  \(x) dplyr::select(x, plot_id, predictions_w, total_simpson))
 
 # add prediction name to each dataset
 mutate_name_w <- function(x, names_df){
@@ -906,7 +906,7 @@ mutate_name_w <- function(x, names_df){
 }
 
 arg2_x_names_df_w <- list(x = 1:length(predictions_selected_w),
-                        names_df = names(predictions_selected_w))
+                          names_df = names(predictions_selected_w))
 
 predictions_selected_w <- arg2_x_names_df_w |>
   pmap_df(mutate_name_w)
@@ -999,15 +999,15 @@ pred_effects_ll_w <- pred_effects_l_w |>
 pred_effects_ll_w$std <- factor(pred_effects_ll_w$std, levels=c("Early", "Median", "Late"))
 
 pred_comparison_w <- ggplot(pred_effects_ll_w, aes
-                               (x = name, y = value,
-                                 color = std)) +
+                            (x = name, y = value,
+                              color = std)) +
   stat_pointinterval(
     point_interval = median_qi,
     position = position_dodge(width = c(0.66, 0.95)),
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in tree species evenness") +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
@@ -1081,10 +1081,10 @@ median_pred_ll_w
 
 line_effect_w <- ggplot(
   median_pred_ll_w, aes (x = EM, y = value, 
-                       color = std)) +
+                         color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
-  scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
+  ylab("Tree species evenness") + xlab("EM proportion") + 
+  scale_y_continuous(limits = c(0, 6), breaks = c(0, 1, 2, 3, 4, 5, 6)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
   theme(
@@ -1105,11 +1105,11 @@ line_effect_w <- ggplot(
 design <- "AAAAAA
            BBCCDD"
 
-Fig_3 <- pattern + line_effect_c + line_effect_m + line_effect_w + plot_layout(design = design)
+Fig_S7 <- pattern + line_effect_c + line_effect_m + line_effect_w + plot_layout(design = design)
 
 ggsave(
-  plot = Fig_3,
-  here("03_results", "Fig_3.png"),
+  plot = Fig_S7,
+  here("03_results", "Fig_S7.png"),
   width = 18, height = 10,
   dpi = 600
 )
@@ -1118,7 +1118,7 @@ comp <- pred_comparison_c + pred_comparison_m + pred_comparison_w
 
 ggsave(
   plot = comp,
-  here("03_results", "Fig_S5.png"),
+  here("03_results", "Fig_S8.png"),
   width = 18, height = 10,
   dpi = 600
 )

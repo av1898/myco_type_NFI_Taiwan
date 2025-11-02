@@ -1,0 +1,394 @@
+## Figure S6
+
+## Libraries
+library(tidyverse)
+library(gratia)
+library(viridis)
+library(grafify)
+library(gridExtra)
+library(ggpubr)
+library(patchwork)
+library(ggdist)
+library(here)
+library(mgcv)
+
+## Data
+simpson_model <- read_rds("01_data/simpson_model.RDS")
+
+data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
+
+## Panel A
+sm <- smooth_estimates(simpson_model, dist = 0.1)
+
+sm_g <- sm |>
+  group_by(EM, mean_dbh_large) |>
+  summarise(est_g = median(.estimate)) |>
+  ungroup()
+
+em_dbh <- ggplot(sm_g, aes(x = EM, y = mean_dbh_large)) +
+  geom_tile(aes(fill = est_g)) +
+  geom_point(data = data_models, aes(x = EM, y = mean_dbh_large), alpha = 0.2) +
+  geom_contour(aes(z = est_g), colour = "black", alpha = 0.5, binwidth = 0.1) + labs(
+    y = "Mean Dbh larger trees (cm)", x = "EM proportion") + scale_fill_gradient2(
+      mid = "white",
+      midpoint = 0,
+      low = "#2166AC",
+      high = "#B2182B", 
+      name = "Partial effect on\nlog-tree species evenness") + scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
+  theme(
+    panel.grid.minor = element_line(colour = "grey90", linewidth = 0.5),
+    strip.background = element_blank(),
+    plot.title = element_text(color = "black", size = 16),
+    strip.text =  element_text(size = 12, 
+                               colour = "grey40"),
+    plot.margin = margin(0, 0, 0, 0),
+    axis.title = element_text(colour = "grey20", size = 14),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_line(colour = "grey40"),
+    panel.grid.major = element_line(colour = "grey90", linewidth = 0.5),
+    axis.line = element_blank(),
+    legend.key = element_blank(),
+    panel.background = element_blank(),
+    panel.spacing = unit(0, "lines")) + 
+  ggtitle('A')
+
+## Panel B
+max_dbh_q <- quantile(data_models$mean_dbh_large, c(0.05, 0.5, 0.95))
+max_dbh_q
+EM_q <- quantile(data_models$EM, c(0.05, 0.5, 0.95))
+EM_q
+
+data_models1 <- data_models
+
+# Predictions
+
+# late stand development
+
+data_model_EM_1_late <- data_models1 |> 
+  mutate(
+    EM = 0,
+    mean_dbh_large = 80.4
+  )
+
+data_model_EM_2_late <- data_models1 |> 
+  mutate(
+    EM = 0.5,
+    mean_dbh_large = 80.4
+  )
+
+data_model_EM_3_late <- data_models1 |> 
+  mutate(
+    EM = 0.987,
+    mean_dbh_large = 80.4
+  )
+
+# median stand development
+
+data_model_EM_1_median <- data_models1 |> 
+  mutate(
+    EM = 0,
+    mean_dbh_large = 42.8
+    
+  )
+
+data_model_EM_2_median <- data_models1 |> 
+  mutate(
+    EM = 0.5,
+    mean_dbh_large = 42.8
+  )
+
+data_model_EM_3_median <- data_models1 |> 
+  mutate(
+    EM = 0.987,
+    mean_dbh_large = 42.8
+  )
+
+# early stand development
+
+data_model_EM_1_early <- data_models1 |> 
+  mutate(
+    EM = 0,
+    mean_dbh_large = 21.1
+    
+  )
+
+data_model_EM_2_early <- data_models1 |> 
+  mutate(
+    EM = 0.5,
+    mean_dbh_large = 21.1
+  )
+
+data_model_EM_3_early <- data_models1 |> 
+  mutate(
+    EM = 0.987,
+    mean_dbh_large = 21.1
+  )
+
+
+newdata_list <- list(
+  data_models1,
+  data_model_EM_1_late,
+  data_model_EM_2_late,
+  data_model_EM_3_late,
+  data_model_EM_1_median,
+  data_model_EM_2_median,
+  data_model_EM_3_median,
+  data_model_EM_1_early,
+  data_model_EM_2_early,
+  data_model_EM_3_early
+)
+
+# make the predictions for each dataset
+predictions <- map(newdata_list, \(x) predict(
+  object = simpson_model, newdata = x, se.fit = TRUE, type = "response"
+))
+
+arg2_dat_pred <- list(dat = newdata_list, pred = predictions)
+
+# add predictions to the corresponding dataset
+add_predictions <- function(dat, pred){
+  dat |> 
+    mutate(
+      predictions = pred$fit
+    )
+}
+
+newdata_list_predictions <- arg2_dat_pred |>
+  pmap(add_predictions)
+
+names(newdata_list_predictions) <- c(
+  "data_models1",
+  "data_model_EM_1_late",
+  "data_model_EM_2_late",
+  "data_model_EM_3_late",
+  "data_model_EM_1_median",
+  "data_model_EM_2_median",
+  "data_model_EM_3_median",
+  "data_model_EM_1_early",
+  "data_model_EM_2_early",
+  "data_model_EM_3_early"
+)
+
+# select the variables of interest from each dataset
+predictions_selected <- map(
+  newdata_list_predictions,
+  \(x) dplyr::select(x, plot_id, predictions, total_simpson))
+
+# add prediction name to each dataset
+mutate_name <- function(x, names_df){
+  predictions_selected[[x]] |> 
+    dplyr::mutate(
+      df = names_df
+    )
+}
+
+arg2_x_names_df <- list(x = 1:length(predictions_selected),
+                        names_df = names(predictions_selected))
+
+predictions_selected <- arg2_x_names_df  |>
+  pmap_df(mutate_name)
+
+rename_predictions <- function(dat, pred_name){
+  predictions_selected |> 
+    filter(df == dat) |> 
+    rename({{ pred_name }} := predictions)
+}
+
+dat_v <- c(
+  "data_models1",
+  "data_model_EM_1_late",
+  "data_model_EM_2_late",
+  "data_model_EM_3_late",
+  "data_model_EM_1_median",
+  "data_model_EM_2_median",
+  "data_model_EM_3_median",
+  "data_model_EM_1_early",
+  "data_model_EM_2_early",
+  "data_model_EM_3_early"
+)
+
+pred_name_v <- c(
+  "data_models1",
+  "pred_EM_1_late",
+  "pred_EM_2_late",
+  "pred_EM_3_late",
+  "pred_EM_1_median",
+  "pred_EM_2_median",
+  "pred_EM_3_median",
+  "pred_EM_1_early",
+  "pred_EM_2_early",
+  "pred_EM_3_early"
+)
+
+arg2_dat_pred_v <- list(
+  dat = dat_v,
+  pred_name = pred_name_v
+)
+
+predictions_selected_r <- arg2_dat_pred_v |>
+  pmap(rename_predictions)
+
+predictions_all <- predictions_selected_r |>
+  reduce(left_join, by = "plot_id")
+
+# get the difference between EM levels in each stand development stage
+predictions_effects <- predictions_all |> 
+  mutate(
+    effect_EM_AM_late = pred_EM_3_late - pred_EM_1_late,
+    effect_EM_MIX_late = pred_EM_3_late - pred_EM_2_late,
+    effect_MIX_AM_late = pred_EM_2_late - pred_EM_1_late,
+    effect_EM_AM_median = pred_EM_3_median - pred_EM_1_median,
+    effect_EM_MIX_median = pred_EM_3_median - pred_EM_2_median,
+    effect_MIX_AM_median = pred_EM_2_median - pred_EM_1_median,
+    effect_EM_AM_early = pred_EM_3_early - pred_EM_1_early,
+    effect_EM_MIX_early = pred_EM_3_early - pred_EM_2_early,
+    effect_MIX_AM_early = pred_EM_2_early - pred_EM_1_early
+  )
+
+pred_effects_l <- predictions_effects |>
+  pivot_longer(
+    cols = c(
+      effect_EM_AM_late,
+      effect_EM_MIX_late,
+      effect_MIX_AM_late,
+      effect_EM_AM_median,
+      effect_EM_MIX_median,
+      effect_MIX_AM_median,
+      effect_EM_AM_early,
+      effect_EM_MIX_early,
+      effect_MIX_AM_early
+    ),
+    names_to = "name",
+    values_to = "value"
+  )
+
+## evaluate predictions on the observed data
+predictions_filtered_test <- predictions_selected |>
+  filter(df == "data_models1") |>
+  dplyr::select(plot_id, total_simpson, predictions)
+
+eval_pred <- ggplot(predictions_filtered_test, aes(
+  predictions, total_simpson)) + geom_point(alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, col = "red")
+
+## plot the effect of EM levels in young, median and late on species evenness
+pred_effects_ll <- pred_effects_l |>
+  mutate(std = case_when(name == "effect_MIX_AM_early" | name == "effect_EM_AM_early" | 
+                           name == "effect_EM_MIX_early" ~ "Early", 
+                         name == "effect_MIX_AM_median" | name == "effect_EM_AM_median" | 
+                           name == "effect_EM_MIX_median" ~ "Median", 
+                         name == "effect_MIX_AM_late" | name == "effect_EM_AM_late" | 
+                           name == "effect_EM_MIX_late" ~ "Late"))
+
+pred_effects_ll$std <- factor(pred_effects_ll$std, levels=c("Early", "Median", "Late"))
+
+pred_comparison <- ggplot(pred_effects_ll, aes
+                          (x = name, y = value,
+                            fill = std, color = std)) + stat_pointinterval(
+                              point_interval = median_qi,
+                              position = position_dodge(width = c(0.66, 0.95)),
+                              alpha = .9) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  ylab("Change in tree species evenness") +
+  scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
+                              expression("Mixed vs. AM"))) +
+  
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  scale_fill_viridis(discrete = TRUE, option = "D") +
+  facet_grid(vars(std), scales = "free") +
+  theme(
+    plot.title = element_text(color = "black", size = 16),
+    plot.subtitle = element_text(color = "black", size = 8),
+    legend.position = "none",
+    panel.grid.major = element_line(colour = "grey90", linewidth = 0.5),
+    panel.background = element_blank(),
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(color = "black", size = 14),
+    axis.text.x = element_text(color = "black", size = 10),
+    axis.text.y = element_text(color = "black", size = 10),
+    strip.text = element_text(color = "black", size = 14)
+  ) + ggtitle('B')
+
+# Illustrate EM effects by making smooth line plot across the mean prediction 
+# of each dataset in "predictions_all"
+
+median_pred <- predictions_all |>
+  summarise(median_AM_late = median(pred_EM_1_late),
+            median_MIX_late = median(pred_EM_2_late),
+            median_EM_late = median(pred_EM_3_late),
+            median_AM_median = median(pred_EM_1_median),
+            median_MIX_median = median(pred_EM_2_median),
+            median_EM_median = median(pred_EM_3_median),
+            median_AM_early = median(pred_EM_1_early),
+            median_MIX_early = median(pred_EM_2_early),
+            median_EM_early = median(pred_EM_3_early))
+
+median_pred_l <- median_pred |>
+  pivot_longer(
+    cols = c(
+      median_AM_late,
+      median_MIX_late,
+      median_EM_late,
+      median_AM_median,
+      median_MIX_median,
+      median_EM_median,
+      median_AM_early,
+      median_MIX_early,
+      median_EM_early
+    ),
+    names_to = "name",
+    values_to = "value"
+  )
+
+median_pred_ll <- median_pred_l |>
+  mutate(EM = case_when(name == "median_AM_late" | name == "median_AM_median" | 
+                          name == "median_AM_early" ~ 0,
+                        name == "median_MIX_late" | name == "median_MIX_median" | 
+                          name == "median_MIX_early" ~ 0.5,
+                        name == "median_EM_late" | name == "median_EM_median" | 
+                          name == "median_EM_early" ~ 0.987), 
+         std = case_when(name == "median_AM_early" | name == "median_MIX_early" | 
+                           name == "median_EM_early" ~ "Early", 
+                         name == "median_AM_median" | name == "median_MIX_median" | 
+                           name == "median_EM_median" ~ "Median", 
+                         name == "median_AM_late" | name == "median_MIX_late" | 
+                           name == "median_EM_late" ~ "Late"))
+
+median_pred_ll$std <- factor(median_pred_ll$std, levels=c("Early", "Median", "Late"))
+
+median_pred_ll
+
+line_effect <- ggplot(
+  median_pred_ll, aes (x = EM, y = value, 
+                       color = std)) +
+  geom_smooth(method = "loess",linewidth = 2.5)  + 
+  geom_point() +
+  ylab("Tree species evenness") + xlab("EM proportion") + 
+  scale_y_continuous(limits = c(0, 5.5), breaks = c(0, 1, 2, 3, 4, 5)) +
+  scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
+  scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
+  theme(
+    plot.title = element_text(color = "black", size = 16),
+    plot.subtitle = element_text(color = "black", size = 8),
+    legend.position = "right",
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    panel.grid.major = element_line(colour = "grey90", linewidth = 0.5),
+    panel.background = element_blank(),
+    axis.title.x = element_text(color = "black", size = 14),
+    axis.title.y = element_text(color = "black", size = 14),
+    axis.text.x = element_text(color = "black", size = 10),
+    axis.text.y = element_text(color = "black", size = 10),
+    strip.text = element_text(color = "black", size = 10)
+  ) + ggtitle('C')
+
+Fig_S6 <- em_dbh + pred_comparison + line_effect  +  plot_layout(ncol=3, widths = c(1.5, 1, 1.5))
+
+ggsave(
+  plot = Fig_S6,
+  here("03_results", "Fig_S6.png"),
+  width = 18, height = 5,
+  dpi = 600
+)
