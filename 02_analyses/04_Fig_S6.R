@@ -34,7 +34,7 @@ em_dbh <- ggplot(sm_g, aes(x = EM, y = mean_dbh_large)) +
       midpoint = 0,
       low = "#2166AC",
       high = "#B2182B", 
-      name = "Partial effect on\nlog-tree species evenness") + scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
+      name = "Partial effect on\nlog-woody species evenness") + scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
   theme(
     panel.grid.minor = element_line(colour = "grey90", linewidth = 0.5),
     strip.background = element_blank(),
@@ -291,7 +291,7 @@ pred_comparison <- ggplot(pred_effects_ll, aes
                               alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species evenness") +
+  ylab("Change in woody species evenness") +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   
@@ -365,7 +365,7 @@ line_effect <- ggplot(
                        color = std)) +
   geom_smooth(method = "loess",linewidth = 2.5)  + 
   geom_point() +
-  ylab("Tree species evenness") + xlab("EM proportion") + 
+  ylab("Woody species evenness") + xlab("EM proportion") + 
   scale_y_continuous(limits = c(0, 5.5), breaks = c(0, 1, 2, 3, 4, 5)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +

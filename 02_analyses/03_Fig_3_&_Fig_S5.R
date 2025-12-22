@@ -50,7 +50,7 @@ pattern <- ggplot(sm_climate_g, aes(x = EM, y = mean_dbh_large, group = climate)
       midpoint = 0,
       low = "#2166AC",
       high = "#B2182B",  
-      name = "Partial effect on\nlog-tree species richness") +
+      name = "Partial effect on\nlog-woody species richness") +
   scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
   theme(
     plot.title = element_text(color = "black", size = 16),
@@ -323,7 +323,7 @@ pred_comparison_c <- ggplot(pred_effects_ll_c, aes
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in woody species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -398,7 +398,7 @@ line_effect_c <- ggplot(
   median_pred_ll_c, aes(x = EM, y = value, fill = std, 
                        color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
+  ylab("Woody species richness") + xlab("EM proportion") + 
   scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -666,7 +666,7 @@ pred_comparison_m <- ggplot(pred_effects_ll_m, aes
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in woody species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -740,7 +740,7 @@ line_effect_m <- ggplot(
   median_pred_ll_m, aes (x = EM, y = value, fill = std, 
                        color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
+  ylab("Woody species richness") + xlab("EM proportion") + 
   scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D") +
@@ -1007,7 +1007,7 @@ pred_comparison_w <- ggplot(pred_effects_ll_w, aes
     alpha = .9) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
-  ylab("Change in tree species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
+  ylab("Change in woody species richness") + scale_y_continuous(breaks = c(-8, -6, -4, -2, 0, 2, 4, 6, 8)) +
   scale_x_discrete(labels = c(expression("EM vs. AM"), expression("EM vs. Mixed"),
                               expression("Mixed vs. AM"))) +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
@@ -1083,7 +1083,7 @@ line_effect_w <- ggplot(
   median_pred_ll_w, aes (x = EM, y = value, 
                        color = std)) +
   geom_smooth(method = "loess",linewidth = 2)  + 
-  ylab("Tree species richness") + xlab("EM proportion") + 
+  ylab("Woody species richness") + xlab("EM proportion") + 
   scale_y_continuous(limits = c(0, 18), breaks = c(0, 5, 10, 15, 20)) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1))  +
   scale_color_viridis(discrete = TRUE, option = "D", name = "Stand development") +
