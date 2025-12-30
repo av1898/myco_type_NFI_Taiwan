@@ -1,2 +1,4 @@
 # myco_type_NFI_Taiwan
 In this repository are the data and codes to reproduce the results of Associations between mycorrhizal dominance and woody species diversity shift with stand development and climate across subtropical and tropical forests
+
+https://doi.org/10.5281/zenodo.18101639
