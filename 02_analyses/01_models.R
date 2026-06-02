@@ -28,7 +28,8 @@ plot(data_models$AM, data_models$EM)
 ## Distribution of variables
 data_models_hist <- data_models |>
   select(EM, basal_area, density, mean_dbh, max_dbh, mean_dbh_large, cv_dbh, elevation,
-         cmi_mean, bio11_tmin, plot_area, total_richness, total_simpson)
+         cmi_mean, bio11_tmin, soil_ph_0_200, soil_n_0_200, plot_area, 
+         total_richness, total_simpson)
 
 data_models_hist_long <- data_models_hist |>
   pivot_longer(colnames(data_models_hist))
@@ -72,8 +73,8 @@ biplot(pca_climate)
 
 ## Covariation
 correl_data <- data_models |>
-  select(EM, bio11_tmin, density, mean_dbh_large, plot_area, 
-         total_richness, total_simpson)
+  select(EM, bio11_tmin, soil_ph_0_200, soil_n_0_200, density, mean_dbh_large, 
+         plot_area, total_richness, total_simpson)
 
 ggpairs(correl_data, title = "correlogram") 
 
@@ -82,7 +83,7 @@ ggpairs(correl_data, title = "correlogram")
 ## Richness model
 model_r <- gam(
   total_richness ~  te(EM, mean_dbh_large, bio11_tmin, bs = c("cr", "cr", "cr"), 
-                       k = c(6, 6, 6)) + log(density) + log(plot_area),
+                       k = c(6, 6, 6)) + s(longitude, latitude) + log(density) + log(plot_area),
   family = nb(link = "log"), method = "REML", data = data_models)
 
 summary(model_r)
@@ -116,10 +117,16 @@ plot(res_model_r, form = data_models$bio11_tmin)
 plot(res_model_r, form = data_models$mean_dbh_large)
 plot(res_model_r, form = data_models$density)
 plot(res_model_r, form = data_models$plot_area)
+plot(res_model_r, form = data_models$longitude)
+plot(res_model_r, form = data_models$latitude)
 
 plotQQunif(res_model_r)
 
 testOutliers(res_model_r, type = "bootstrap")
+
+## Residual spatial correlation
+testSpatialAutocorrelation(simulationOutput = res_model_r, x = data_models$longitude,
+                           y= data_models$latitude)
 
 ## Save model
 saveRDS(model_r, "01_data/richness_model.RDS")
@@ -127,7 +134,7 @@ saveRDS(model_r, "01_data/richness_model.RDS")
 ## Simpson model
 model_s <- gam(
   total_simpson ~  te(EM, mean_dbh_large, bio11_tmin, bs = c("cr", "cr", "cr"), 
-                       k = c(6, 6, 6)) + log(density) + log(plot_area),
+                       k = c(6, 6, 6)) + s(longitude, latitude) + log(density) + log(plot_area),
   family = Gamma(link = "log"), method = "REML", data = data_models)
 
 summary(model_s)
@@ -161,13 +168,16 @@ plot(res_model_s, form = data_models$bio11_tmin)
 plot(res_model_s, form = data_models$mean_dbh_large)
 plot(res_model_s, form = data_models$density)
 plot(res_model_s, form = data_models$plot_area)
+plot(res_model_s, form = data_models$longitude)
+plot(res_model_s, form = data_models$latitude)
 
 plotQQunif(res_model_s)
 
 testOutliers(res_model_s, type = "bootstrap")
 
+## Residual spatial correlation
+testSpatialAutocorrelation(simulationOutput = res_model_s, x = data_models$longitude,
+                           y= data_models$latitude)
+
 ## Save model
 saveRDS(model_s, "01_data/simpson_model.RDS")
-
-
-

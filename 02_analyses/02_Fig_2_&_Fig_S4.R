@@ -18,7 +18,7 @@ richness_model <- read_rds("01_data/richness_model.RDS")
 data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
 
 ## Panel A
-sm <- smooth_estimates(richness_model, dist = 0.1)
+sm <- smooth_estimates(richness_model, dist = 0.1, select = "bio11_tmin", partial_match = TRUE)
 
 sm_g <- sm |>
   group_by(EM, mean_dbh_large) |>
@@ -390,5 +390,76 @@ ggsave(
   plot = Fig_2,
   here("03_results", "Fig_2.png"),
   width = 18, height = 5,
+  dpi = 600
+)
+
+## Figure S4
+sm_g <- sm |>
+  group_by(EM, bio11_tmin) |>
+  summarise(est_g = median(.estimate)) |>
+  ungroup()
+
+em_bio11 <- ggplot(sm_g, aes(x = EM, y = bio11_tmin)) +
+  geom_tile(aes(fill = est_g), show.legend = FALSE) +
+  geom_point(data = data_models, aes(x = EM, y = bio11_tmin), alpha = 0.2) +
+  geom_contour(aes(z = est_g), colour = "black", alpha = 0.5, binwidth = 0.1) + labs(
+    y = "Mean winter temperature (ºC)", x = "EM proportion") + scale_fill_gradient2(
+      mid = "white",
+      midpoint = 0,
+      low = scales::muted("#2166AC"),
+      high = scales::muted("#B2182B"), 
+      name = "Partial effect on\nlog-woody species richness") + scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)) +
+  theme(
+    strip.background = element_blank(),
+    strip.text =  element_text(size = 12, 
+                               colour = "grey40"),
+    plot.margin = margin(0, 0, 0, 0),
+    axis.title = element_text(colour = "grey20", size = 14),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_line(colour = "grey40"),
+    panel.grid.major = element_line(colour = "grey40", linewidth = 0.5),
+    axis.line = element_blank(),
+    legend.key = element_blank(),
+    panel.background = element_blank(),
+    panel.spacing = unit(0, "lines"))
+
+sm_gg <- sm |>
+  group_by(bio11_tmin, mean_dbh_large) |>
+  summarise(est_gg = median(.estimate)) |>
+  ungroup()
+
+dbh_bio11 <- ggplot(sm_gg, aes(x = bio11_tmin, y = mean_dbh_large)) +
+  geom_tile(aes(fill = est_gg)) +
+  geom_point(data = data_models, aes(x = bio11_tmin, y = mean_dbh_large), alpha = 0.2) + 
+  geom_contour(aes(z = est_gg), colour = "black", alpha = 0.5, binwidth = 0.1) + labs(
+    y = "Mean Dbh larger trees (cm)", x = "Mean winter temperature (ºC)") + scale_fill_gradient2(
+      mid = "white",
+      midpoint = 0,
+      low = "#2166AC",
+      high = "#B2182B", limits = c(-5, 6), breaks = c(-4, -2, 0, 2, 4),
+      name = "Partial effect on\nlog-woody species richness") +
+  theme(
+    strip.background = element_blank(),
+    strip.text =  element_text(size = 12, 
+                               colour = "grey40"),
+    plot.margin = margin(0, 0, 0, 0),
+    axis.title = element_text(colour = "grey20", size = 14),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_line(colour = "grey40"),
+    panel.grid.major = element_line(colour = "grey40", linewidth = 0.5),
+    axis.line = element_blank(),
+    legend.key = element_blank(),
+    panel.background = element_blank(),
+    panel.spacing = unit(0, "lines"))
+
+Fig_S4 <- em_bio11 + dbh_bio11
+Fig_S4
+
+ggsave(
+  plot = Fig_S4,
+  here("03_results", "Fig_S4.png"),
+  width = 12, height = 5,
   dpi = 600
 )

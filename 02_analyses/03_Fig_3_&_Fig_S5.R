@@ -17,7 +17,7 @@ richness_model <- read_rds("01_data/richness_model.RDS")
 data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
 
 ## top panel
-sm <- smooth_estimates(richness_model, dist = 0.1)
+sm <- smooth_estimates(richness_model, dist = 0.1, select = "bio11_tmin", partial_match = TRUE)
 
 quantile(data_models$bio11_tmin)
 

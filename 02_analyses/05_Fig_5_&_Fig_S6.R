@@ -1,4 +1,4 @@
-## Figure S7
+## Figure 5
 
 ## Libraries
 library(tidyverse)
@@ -17,7 +17,7 @@ simpson_model <- read_rds("01_data/simpson_model.RDS")
 data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
 
 ## top panel
-sm <- smooth_estimates(simpson_model, dist = 0.1)
+sm <- smooth_estimates(simpson_model, dist = 0.1, select = "bio11_tmin", partial_match = TRUE)
 
 quantile(data_models$bio11_tmin)
 
@@ -1105,11 +1105,11 @@ line_effect_w <- ggplot(
 design <- "AAAAAA
            BBCCDD"
 
-Fig_S7 <- pattern + line_effect_c + line_effect_m + line_effect_w + plot_layout(design = design)
+Fig_5 <- pattern + line_effect_c + line_effect_m + line_effect_w + plot_layout(design = design)
 
 ggsave(
-  plot = Fig_S7,
-  here("03_results", "Fig_S7.png"),
+  plot = Fig_5,
+  here("03_results", "Fig_5.png"),
   width = 18, height = 10,
   dpi = 600
 )
@@ -1118,7 +1118,7 @@ comp <- pred_comparison_c + pred_comparison_m + pred_comparison_w
 
 ggsave(
   plot = comp,
-  here("03_results", "Fig_S8.png"),
+  here("03_results", "Fig_S6.png"),
   width = 18, height = 10,
   dpi = 600
 )

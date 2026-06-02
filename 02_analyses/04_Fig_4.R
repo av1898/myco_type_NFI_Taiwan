@@ -1,4 +1,4 @@
-## Figure S6
+## Figure 4
 
 ## Libraries
 library(tidyverse)
@@ -18,7 +18,7 @@ simpson_model <- read_rds("01_data/simpson_model.RDS")
 data_models <- read_csv('01_data/data_NFI_Taiwan.csv')
 
 ## Panel A
-sm <- smooth_estimates(simpson_model, dist = 0.1)
+sm <- smooth_estimates(simpson_model, dist = 0.1, select = "bio11_tmin", partial_match = TRUE)
 
 sm_g <- sm |>
   group_by(EM, mean_dbh_large) |>
@@ -384,11 +384,11 @@ line_effect <- ggplot(
     strip.text = element_text(color = "black", size = 10)
   ) + ggtitle('C')
 
-Fig_S6 <- em_dbh + pred_comparison + line_effect  +  plot_layout(ncol=3, widths = c(1.5, 1, 1.5))
+Fig_4 <- em_dbh + pred_comparison + line_effect  +  plot_layout(ncol=3, widths = c(1.5, 1, 1.5))
 
 ggsave(
-  plot = Fig_S6,
-  here("03_results", "Fig_S6.png"),
+  plot = Fig_4,
+  here("03_results", "Fig_4.png"),
   width = 18, height = 5,
   dpi = 600
 )
